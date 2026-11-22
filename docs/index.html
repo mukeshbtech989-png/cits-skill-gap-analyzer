@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skill Gap Analyzer · CITS CSA · NSTI Kanpur</title>
+  <meta name="description" content="AI-Based Student Performance & Skill Gap Analyzer — static demo of the CITS CSA project by Mukesh Kumar, NSTI Kanpur.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='32' y='43' font-family='Arial' font-size='26' font-weight='bold' fill='white' text-anchor='middle'%3ESG%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top">
+      <span class="brand-mark">SG</span>
+      <span class="brand-text">
+        <strong>Skill Gap Analyzer</strong>
+        <small>CITS · CSA · NSTI Kanpur</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <span class="pill">Static demo</span>
+      <a class="btn btn-sm btn-ghost" id="repoLink" href="#" target="_blank" rel="noopener">View source</a>
+    </nav>
+  </header>
+
+  <main class="wrap" id="top">
+    <section class="hero">
+      <div>
+        <span class="pill pill-light">AI + ML · Flask · scikit-learn</span>
+        <h1>Student performance, explained at a glance.</h1>
+        <p>
+          Attendance, theory, practical, tests, projects and skills combine into one AI
+          performance score — with each student's skill gaps and a personalised learning plan.
+          This page runs entirely in your browser on demo data.
+        </p>
+        <div class="hero-actions">
+          <button class="btn" type="button" id="openAdd">+ Add a student</button>
+          <button class="btn btn-ghost" type="button" id="exportCsv">Export CSV</button>
+          <button class="btn btn-ghost" type="button" id="resetDemo">Reset demo data</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <span class="hero-card-label">About this demo</span>
+        <div class="hero-metric"><strong>100%</strong><span>client-side, no server needed</span></div>
+        <div class="hero-metric"><strong>8</strong><span>sample CSA students</span></div>
+        <div class="hero-metric"><strong>localStorage</strong><span>your edits stay on this device</span></div>
+        <p class="hero-note">
+          The full project ships a Flask API and a trained RandomForest model; this page
+          mirrors the same scoring and recommendation logic in JavaScript.
+        </p>
+      </div>
+    </section>
+
+    <section class="stats" id="stats">
+      <article class="stat"><span class="stat-label">Students tracked</span><strong class="stat-value" id="kpiTotal">0</strong><span class="stat-note">Batch 2026-27</span></article>
+      <article class="stat"><span class="stat-label">Class average</span><strong class="stat-value" id="kpiAverage">0</strong><span class="stat-note" id="kpiAverageNote">—</span></article>
+      <article class="stat"><span class="stat-label">Needs attention</span><strong class="stat-value" id="kpiRisk">0</strong><span class="stat-note">High-risk students</span></article>
+      <article class="stat"><span class="stat-label">Weakest skill</span><strong class="stat-value stat-value-sm" id="kpiWeakest">—</strong><span class="stat-note" id="kpiWeakestNote">No data yet</span></article>
+    </section>
+
+    <div class="layout">
+      <div class="column">
+        <section class="panel">
+          <header class="panel-head">
+            <div><h2>Skill readiness by area</h2><p>Class average per skill vs the expected level of 60.</p></div>
+          </header>
+          <div class="bars" id="cohortChart"></div>
+        </section>
+
+        <section class="panel">
+          <header class="panel-head">
+            <div><h2>Student performance</h2><p>Sorted by AI score. Click a row for the full report.</p></div>
+            <button class="btn btn-sm" type="button" id="openAdd2">+ Add student</button>
+          </header>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Roll no</th>
+                  <th class="num">Att.</th>
+                  <th class="num">AI score</th>
+                  <th>Level</th>
+                  <th>Top gap</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="studentRows"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="emptyState" hidden>
+            <p>No students yet. Add one or reset the demo data.</p>
+            <button class="btn" type="button" id="resetEmpty">Load demo data</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="column">
+        <section class="panel detail" id="detailPanel">
+          <div class="detail-placeholder">
+            <span class="pill">Student report</span>
+            <h2>Select a student</h2>
+            <p class="muted">Choose any row to see the AI summary, skill levels, gaps and a personalised learning plan.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <p class="demo-note">
+      <strong>Note:</strong> this static page is the GitHub Pages demo. The complete
+      implementation — Flask API, SQL database and a trained scikit-learn model — lives in the
+      repository and is deployable on Render (free tier).
+    </p>
+  </main>
+
+  <footer class="footer">
+    AI-Based Student Performance &amp; Skill Gap Analyzer · Mukesh Kumar · CITS CSA · NSTI Kanpur · Session 2026-27
+  </footer>
+
+  <dialog id="addDialog" class="dialog">
+    <form id="addForm" method="dialog">
+      <header class="dialog-head">
+        <div>
+          <h2>Add a student</h2>
+          <p class="muted">Enter academic data and current skill levels (0-100).</p>
+        </div>
+        <button class="icon-btn" type="button" id="closeAdd" aria-label="Close">✕</button>
+      </header>
+
+      <div class="form-grid">
+        <label>Roll number <input name="roll_no" required maxlength="32" placeholder="CITS26CSA009"></label>
+        <label>Full name <input name="name" required maxlength="120" placeholder="Student name"></label>
+        <label>Attendance <input name="attendance" type="number" min="0" max="100" step="0.5" value="75"></label>
+        <label>Theory marks <input name="theory_marks" type="number" min="0" max="100" step="0.5" value="60"></label>
+        <label>Practical marks <input name="practical_marks" type="number" min="0" max="100" step="0.5" value="60"></label>
+        <label>Test score <input name="test_score" type="number" min="0" max="100" step="0.5" value="60"></label>
+        <label>Project score <input name="project_score" type="number" min="0" max="100" step="0.5" value="60"></label>
+      </div>
+
+      <h3 class="dialog-sub">Skill levels</h3>
+      <div class="form-grid form-grid-4" id="skillInputs"></div>
+
+      <p class="form-error" id="formError" hidden></p>
+
+      <div class="dialog-actions">
+        <button class="btn" type="submit">Save &amp; analyse</button>
+        <button class="btn btn-ghost" type="button" id="cancelAdd">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

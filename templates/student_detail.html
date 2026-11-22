@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }}{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+
+<section class="profile">
+  <div class="profile-main">
+    <span class="avatar avatar-lg">{{ student.name[:1]|upper }}</span>
+    <div>
+      <h1>{{ student.name }}</h1>
+      <p class="muted">{{ student.roll_no }} · {{ student.trade }} · Batch {{ student.batch }}</p>
+      {% if student.email %}<p class="muted">{{ student.email }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="score-ring {{ analysis.level|lower|replace(' ', '-') }}" style="--pct: {{ analysis.overall_score }}">
+    <div class="score-ring-inner">
+      <strong>{{ analysis.overall_score }}</strong>
+      <span>{{ analysis.level }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="stats stats-5">
+  <article class="stat"><span class="stat-label">Attendance</span><strong class="stat-value">{{ analysis.components.attendance|round|int }}<small>%</small></strong></article>
+  <article class="stat"><span class="stat-label">Theory</span><strong class="stat-value">{{ analysis.components.theory_marks|round|int }}</strong></article>
+  <article class="stat"><span class="stat-label">Practical</span><strong class="stat-value">{{ analysis.components.practical_marks|round|int }}</strong></article>
+  <article class="stat"><span class="stat-label">Tests</span><strong class="stat-value">{{ analysis.components.test_score|round|int }}</strong></article>
+  <article class="stat"><span class="stat-label">Project</span><strong class="stat-value">{{ analysis.components.project_score|round|int }}</strong></article>
+</section>
+
+<section class="ai-summary">
+  <span class="pill pill-dark">AI summary</span>
+  <p>{{ analysis.summary }}</p>
+  <div class="ai-meta">
+    <span>Predicted score <strong>{{ analysis.predicted_score }}</strong></span>
+    <span>Calculated score <strong>{{ analysis.rule_score }}</strong></span>
+    <span>Risk level <strong class="risk risk-{{ analysis.risk|lower }}">{{ analysis.risk }}</strong></span>
+  </div>
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <header class="panel-head">
+      <div><h2>Skill levels</h2><p>Gap shown against the expected level of {{ catalog_expected }}.</p></div>
+    </header>
+    <div class="bars">
+      {% for skill, score in analysis.skills.items() %}
+        <div class="bar-row">
+          <span class="bar-label">{{ skill }}</span>
+          <div class="bar-track">
+            <div class="bar-fill {{ 'is-low' if score < 50 else ('is-mid' if score < 65 else 'is-high') }}" style="width: {{ score }}%"></div>
+            <span class="bar-target" style="left: {{ catalog.get(skill, 60) }}%"></span>
+          </div>
+          <span class="bar-value">{{ score }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel">
+    <header class="panel-head"><div><h2>Skill gaps</h2><p>Weak areas, biggest gap first.</p></div></header>
+    {% if analysis.gaps %}
+      <ul class="gap-list">
+        {% for gap in analysis.gaps %}
+          <li class="gap-item">
+            <div>
+              <strong>{{ gap.skill }}</strong>
+              <span class="severity {{ gap.severity }}">{{ gap.severity }}</span>
+            </div>
+            <span class="gap-numbers">{{ gap.score }} → target {{ gap.expected }} <small>(−{{ gap.gap }})</small></span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">Every tracked skill is at or above the expected level.</p>
+    {% endif %}
+  </article>
+</section>
+
+<section class="panel">
+  <header class="panel-head">
+    <div><h2>Personalised learning plan</h2><p>{% if analysis.gaps %}Generated from the three largest skill gaps.{% else %}Stretch goals for an already strong student.{% endif %}</p></div>
+  </header>
+  <div class="reco-grid">
+    {% for reco in analysis.recommendations %}
+      <article class="reco">
+        <div class="reco-head">
+          <h3>{{ reco.skill }}</h3>
+          <span class="badge {{ reco.priority }}">{{ reco.priority }}</span>
+        </div>
+        <p class="reco-score">{{ reco.current }} → target {{ reco.target }}</p>
+        <p>{{ reco.action }}</p>
+        <p class="reco-resource"><strong>Practice with:</strong> {{ reco.resource }}</p>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel panel-danger">
+  <div>
+    <h2>Remove student</h2>
+    <p class="muted">This deletes the record and its analysis permanently.</p>
+  </div>
+  <form method="post" action="{{ url_for('delete_student', student_id=student.id) }}"
+        onsubmit="return confirm('Remove {{ student.name }} from the records?');">
+    <button class="btn btn-danger" type="submit">Delete record</button>
+  </form>
+</section>
+{% endblock %}

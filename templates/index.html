@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="pill">AI + ML · Flask · scikit-learn</span>
+    <h1>Student performance, explained at a glance.</h1>
+    <p>
+      Combine attendance, theory, practical, test, project and skill scores into one
+      AI performance score — then surface each student's skill gaps and a personalised
+      learning plan.
+    </p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('add_student') }}">Add a student</a>
+      <a class="btn btn-ghost" href="{{ url_for('demo') }}">Open static demo</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <span class="hero-card-label">Model quality</span>
+    <div class="hero-metric">
+      <strong>{{ '%.1f'|format((metrics.r2 * 100)) }}%</strong>
+      <span>R² on held-out data</span>
+    </div>
+    <div class="hero-metric">
+      <strong>{{ metrics.mae }}</strong>
+      <span>marks mean absolute error</span>
+    </div>
+    <div class="hero-metric">
+      <strong>{{ metrics.samples }}</strong>
+      <span>training samples</span>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <article class="stat">
+    <span class="stat-label">Students tracked</span>
+    <strong class="stat-value">{{ summary.total }}</strong>
+    <span class="stat-note">Batch 2026-27</span>
+  </article>
+  <article class="stat">
+    <span class="stat-label">Class average</span>
+    <strong class="stat-value">{{ summary.average_score }}<small>/100</small></strong>
+    <span class="stat-note">{{ grade(summary.average_score) }} overall</span>
+  </article>
+  <article class="stat">
+    <span class="stat-label">Needs attention</span>
+    <strong class="stat-value">{{ summary.at_risk }}</strong>
+    <span class="stat-note">High-risk students</span>
+  </article>
+  <article class="stat">
+    <span class="stat-label">Weakest skill</span>
+    <strong class="stat-value stat-value-sm">{{ summary.weakest[0].skill if summary.weakest else '—' }}</strong>
+    <span class="stat-note">
+      {% if summary.weakest %}Class average {{ summary.weakest[0].average }}/100{% else %}No data yet{% endif %}
+    </span>
+  </article>
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <header class="panel-head">
+      <div>
+        <h2>Skill readiness by area</h2>
+        <p>Class average per skill against the expected level of {{ summary.skills[0].expected if summary.skills else 60 }}.</p>
+      </div>
+    </header>
+    <div class="bars">
+      {% for skill in summary.skills %}
+        <div class="bar-row">
+          <span class="bar-label">{{ skill.skill }}</span>
+          <div class="bar-track">
+            <div class="bar-fill {{ 'is-low' if skill.average < 50 else ('is-mid' if skill.average < 65 else 'is-high') }}"
+                 style="width: {{ skill.average }}%"></div>
+            <span class="bar-target" style="left: {{ skill.expected }}%" title="Expected {{ skill.expected }}"></span>
+          </div>
+          <span class="bar-value">{{ skill.average }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    <p class="legend"><span class="legend-target"></span> Vertical line = expected level ({{ summary.skills[0].expected if summary.skills else 60 }}) for every skill.</p>
+  </article>
+
+  <article class="panel">
+    <header class="panel-head">
+      <div>
+        <h2>What drives the score</h2>
+        <p>Random-forest feature importance from the trained model.</p>
+      </div>
+    </header>
+    <div class="bars bars-importance">
+      {% for item in importance %}
+        <div class="bar-row">
+          <span class="bar-label">{{ item.label }}</span>
+          <div class="bar-track">
+            <div class="bar-fill is-brand" style="width: {{ item.importance }}%"></div>
+          </div>
+          <span class="bar-value">{{ item.importance }}%</span>
+        </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="panel">
+  <header class="panel-head">
+    <div>
+      <h2>Student performance</h2>
+      <p>Sorted by AI performance score. Click a row for the full skill-gap report.</p>
+    </div>
+    <a class="btn btn-sm btn-ghost" href="{{ url_for('add_student') }}">+ Add student</a>
+  </header>
+
+  {% if rows %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Roll no</th>
+            <th class="num">Attendance</th>
+            <th class="num">AI score</th>
+            <th>Level</th>
+            <th>Top skill gap</th>
+            <th>Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr onclick="window.location='{{ url_for('student_detail', student_id=row.student.id) }}'">
+              <td>
+                <span class="avatar">{{ row.student.name[:1]|upper }}</span>
+                <span class="cell-name">{{ row.student.name }}</span>
+              </td>
+              <td class="mono">{{ row.student.roll_no }}</td>
+              <td class="num">{{ row.student.attendance|round|int }}%</td>
+              <td class="num"><strong>{{ row.analysis.overall_score }}</strong></td>
+              <td><span class="badge {{ row.analysis.level|lower|replace(' ', '-') }}">{{ row.analysis.level }}</span></td>
+              <td>
+                {% if row.analysis.gaps %}
+                  {{ row.analysis.gaps[0].skill }}
+                  <small class="muted">(−{{ row.analysis.gaps[0].gap }})</small>
+                {% else %}
+                  <span class="muted">None</span>
+                {% endif %}
+              </td>
+              <td><span class="risk risk-{{ row.analysis.risk|lower }}">{{ row.analysis.risk }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <p>No students yet. Add the first student to generate an AI report.</p>
+      <a class="btn" href="{{ url_for('add_student') }}">Add a student</a>
+    </div>
+  {% endif %}
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <header class="panel-head"><div><h2>Strongest areas</h2><p>Where the class is already performing.</p></div></header>
+    <ul class="rank-list">
+      {% for skill in summary.strongest %}
+        <li>
+          <span class="rank-index">{{ loop.index }}</span>
+          <span class="rank-name">{{ skill.skill }}</span>
+          <span class="rank-score">{{ skill.average }}</span>
+        </li>
+      {% else %}
+        <li class="muted">No data yet.</li>
+      {% endfor %}
+    </ul>
+  </article>
+  <article class="panel">
+    <header class="panel-head"><div><h2>Top performers</h2><p>Highest AI performance scores.</p></div></header>
+    <ul class="rank-list">
+      {% for student in summary.top_students %}
+        <li>
+          <span class="rank-index">{{ loop.index }}</span>
+          <span class="rank-name">{{ student.name }}<small class="muted"> · {{ student.roll_no }}</small></span>
+          <span class="rank-score">{{ student.score }}</span>
+        </li>
+      {% else %}
+        <li class="muted">No data yet.</li>
+      {% endfor %}
+    </ul>
+  </article>
+</section>
+{% endblock %}

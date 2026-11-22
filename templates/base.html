@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AI-Based Student Performance & Skill Gap Analyzer — CITS CSA, NSTI Kanpur.">
+  <title>{% block title %}Dashboard{% endblock %} · Skill Gap Analyzer</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='32' y='43' font-family='Arial' font-size='26' font-weight='bold' fill='white' text-anchor='middle'%3ESG%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <span class="brand-mark">SG</span>
+      <span class="brand-text">
+        <strong>Skill Gap Analyzer</strong>
+        <small>CITS · CSA · NSTI Kanpur</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a class="nav-link {{ 'is-active' if request.endpoint == 'dashboard' }}" href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a class="nav-link {{ 'is-active' if request.endpoint == 'demo' }}" href="{{ url_for('demo') }}">Demo</a>
+      <a class="btn btn-sm" href="{{ url_for('add_student') }}">+ Add student</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    AI-Based Student Performance &amp; Skill Gap Analyzer · Mukesh Kumar ·
+    CITS CSA · NSTI Kanpur · Session 2026-27
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

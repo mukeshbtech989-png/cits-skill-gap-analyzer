@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Add student{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{{ url_for('dashboard') }}">← Back to dashboard</a>
+
+<section class="panel">
+  <header class="panel-head">
+    <div>
+      <h1 class="h1-sm">Add a student</h1>
+      <p>Enter academic data and current skill levels. The AI report is generated immediately.</p>
+    </div>
+  </header>
+
+  <form class="form" method="post" action="{{ url_for('create_student') }}">
+    <fieldset>
+      <legend>Student details</legend>
+      <div class="form-grid">
+        <label>Roll number <span class="req">*</span>
+          <input name="roll_no" required maxlength="32" value="{{ form.get('roll_no', '') }}" placeholder="CITS26CSA009">
+        </label>
+        <label>Full name <span class="req">*</span>
+          <input name="name" required maxlength="120" value="{{ form.get('name', '') }}" placeholder="Student name">
+        </label>
+        <label>Trade
+          <input name="trade" maxlength="80" value="{{ form.get('trade', 'Computer Software Application (CSA)') }}">
+        </label>
+        <label>Batch
+          <input name="batch" maxlength="40" value="{{ form.get('batch', '2026-27') }}">
+        </label>
+        <label>Email
+          <input name="email" type="email" maxlength="160" value="{{ form.get('email', '') }}" placeholder="student@example.com">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Academic performance (0-100)</legend>
+      <div class="form-grid form-grid-5">
+        <label>Attendance
+          <input name="attendance" type="number" min="0" max="100" step="0.5" value="{{ form.get('attendance', 75) }}">
+        </label>
+        <label>Theory marks
+          <input name="theory_marks" type="number" min="0" max="100" step="0.5" value="{{ form.get('theory_marks', 60) }}">
+        </label>
+        <label>Practical marks
+          <input name="practical_marks" type="number" min="0" max="100" step="0.5" value="{{ form.get('practical_marks', 60) }}">
+        </label>
+        <label>Test score
+          <input name="test_score" type="number" min="0" max="100" step="0.5" value="{{ form.get('test_score', 60) }}">
+        </label>
+        <label>Project score
+          <input name="project_score" type="number" min="0" max="100" step="0.5" value="{{ form.get('project_score', 60) }}">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Skill levels (0-100)</legend>
+      <div class="form-grid form-grid-4">
+        {% for skill in skill_keys %}
+          <label>{{ skill }}
+            <input name="{{ skill_field(skill) }}" type="number" min="0" max="100" step="1"
+                   value="{{ form.get(skill_field(skill), catalog[skill]) }}">
+          </label>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div class="form-actions">
+      <button class="btn" type="submit">Save &amp; analyse</button>
+      <a class="btn btn-ghost" href="{{ url_for('dashboard') }}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
