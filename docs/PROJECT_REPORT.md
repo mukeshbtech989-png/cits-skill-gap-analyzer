@@ -254,6 +254,20 @@ python -m unittest discover -s tests -v
 - The static demo reproduces the scoring and recommendation logic with no backend,
   making the project easy to showcase on GitHub Pages.
 
+## 12.1 Screenshots
+
+**Dashboard**
+
+![Dashboard](screenshots/dashboard.png)
+
+**Student report**
+
+![Student report](screenshots/student-report.png)
+
+**Static demo (GitHub Pages)**
+
+![Static demo](screenshots/static-demo.png)
+
 ## 13. Limitations
 
 - The model is trained on synthetic data; predictions are indicative until retrained on

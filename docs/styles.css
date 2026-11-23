@@ -191,7 +191,7 @@ p { margin: 0 0 10px; }
   box-shadow: inset 0 0 0 1px #f1f3f8;
 }
 .score-ring-inner strong { font-size: 21px; letter-spacing: -.03em; }
-.score-ring-inner span { font-size: 9.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.score-ring-inner span { font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; line-height: 1.2; padding: 0 6px; }
 
 .ai-summary {
   padding: 16px; margin-bottom: 14px; border-radius: 14px;

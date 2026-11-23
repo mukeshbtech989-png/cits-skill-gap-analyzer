@@ -405,13 +405,17 @@ def analyze_many(records: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
 
         name = str(record.get("name") or "This student").strip()
         level = grade(overall)
-        article = "an" if level[0].lower() in "aeiou" else "a"
-        strong_text = ", ".join(item["skill"] for item in strengths[:3]) or "no skill above 75 yet"
-        gap_text = ", ".join(item["skill"] for item in gaps[:3]) or "no skill below the expected level"
+        if strengths:
+            strong_text = "Strongest areas: " + ", ".join(item["skill"] for item in strengths[:3]) + "."
+        else:
+            strong_text = "No skill is above 75 yet."
+        if gaps:
+            gap_text = "Priority improvement areas: " + ", ".join(item["skill"] for item in gaps[:3]) + "."
+        else:
+            gap_text = "All tracked skills are at or above the expected level."
         summary = (
-            f"{name} is performing at {article} {level.lower()} level with an AI score of "
-            f"{overall}/100. Strongest areas: {strong_text}. "
-            f"Priority improvement areas: {gap_text}."
+            f"{name}'s overall performance is at the {level} level "
+            f"(AI score {overall}/100). {strong_text} {gap_text}"
         )
 
         results.append(

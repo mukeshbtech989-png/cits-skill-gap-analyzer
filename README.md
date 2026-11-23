@@ -44,6 +44,16 @@ This project automates the whole loop:
 | Portable database | SQLite out of the box, MySQL/Postgres via `DATABASE_URL` |
 | Demo data | Eight realistic CSA students seeded on first run |
 
+## Screenshots
+
+| Dashboard | Student report |
+| --- | --- |
+| ![Dashboard](docs/screenshots/dashboard.png) | ![Student report](docs/screenshots/student-report.png) |
+
+Static demo published on GitHub Pages:
+
+![Static demo](docs/screenshots/static-demo.png)
+
 ## Tech stack
 
 | Layer | Tools |

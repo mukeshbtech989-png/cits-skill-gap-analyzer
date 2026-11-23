@@ -132,11 +132,14 @@ function analyze(student) {
   const attendance = metrics[0];
   const risk = overall < 55 || attendance < 60 ? "High" : overall < 70 || attendance < 75 ? "Medium" : "Low";
 
-  const strongText = strengths.slice(0, 3).map((item) => item.skill).join(", ") || "no skill above 75 yet";
-  const gapText = gaps.slice(0, 3).map((item) => item.skill).join(", ") || "no skill below the expected level";
-  const article = /^[aeiou]/i.test(level) ? "an" : "a";
-  const summary = `${student.name} is performing at ${article} ${level.toLowerCase()} level with an AI score of ${overall}/100. ` +
-    `Strongest areas: ${strongText}. Priority improvement areas: ${gapText}.`;
+  const strongText = strengths.length
+    ? "Strongest areas: " + strengths.slice(0, 3).map((item) => item.skill).join(", ") + "."
+    : "No skill is above 75 yet.";
+  const gapText = gaps.length
+    ? "Priority improvement areas: " + gaps.slice(0, 3).map((item) => item.skill).join(", ") + "."
+    : "All tracked skills are at or above the expected level.";
+  const summary = `${student.name}'s overall performance is at the ${level} level ` +
+    `(AI score ${overall}/100). ${strongText} ${gapText}`;
 
   return {
     student,
