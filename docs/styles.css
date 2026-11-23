@@ -140,7 +140,7 @@ p { margin: 0 0 10px; }
 
 /* table */
 .table-wrap { overflow-x: auto; margin: 0 -6px; }
-.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 760px; }
 .table th {
   text-align: left; padding: 10px 12px; font-size: 11.5px; letter-spacing: .06em;
   text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap;
@@ -150,7 +150,7 @@ p { margin: 0 0 10px; }
 .table tbody tr:hover { background: #f8f9ff; }
 .table tbody tr.is-selected { background: #eef1fb; box-shadow: inset 3px 0 0 var(--brand); }
 .table .num { text-align: right; font-variant-numeric: tabular-nums; }
-.cell-name { font-weight: 600; }
+.cell-name { font-weight: 600; white-space: nowrap; }
 .avatar {
   display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 9px;
   border-radius: 50%; background: #eef1fb; color: #4338ca; font-weight: 700; font-size: 13px; vertical-align: middle;
