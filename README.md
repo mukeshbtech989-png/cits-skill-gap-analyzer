@@ -7,7 +7,9 @@ learning plan.
 Built for the **CITS – Computer Software Application (CSA)** project at
 **NSTI Kanpur**, session **2026-27**.
 
-- **Live app (Flask + ML):** deploy to Render — see [Deployment](#deployment)
+**Live demo:** <https://mukeshbtech989-png.github.io/cits-skill-gap-analyzer/>
+
+- **Full app (Flask + ML):** run locally or deploy to Render — see [Deployment](#deployment)
 - **Static demo (GitHub Pages):** `docs/` — works with zero backend
 - **Stack:** Python · Flask · SQLAlchemy (SQLite/MySQL) · pandas · scikit-learn · HTML/CSS/JS
 
@@ -221,7 +223,7 @@ git push -u origin main
    on every push that touches `docs/`.
 
 The demo URL is `https://mukeshbtech989-png.github.io/cits-skill-gap-analyzer/`
-(`REPO_URL` in `docs/app.js` is already set to the repository).
+(`REPO_URL` in `docs/app.js` is already set to the repository) and is live now.
 
 > GitHub Pages only serves static files. That is why the interactive demo is written in
 > vanilla JavaScript — the Flask API and ML model need a real Python host.
